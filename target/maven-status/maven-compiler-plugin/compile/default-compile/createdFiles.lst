@@ -1,7 +1,10 @@
+metier\model\Etablissement.class
+dao\JpaUtil$1.class
+metier\model\Etablissement_.class
+metier\model\Matiere.class
 dao\JpaUtil.class
 metier\model\Eleve.class
-dao\JpaUtil$1.class
 console\Saisie.class
-.netbeans_automatic_build
 console\Message.class
-metier\model\Etablissement.class
+metier\model\Eleve_.class
+metier\model\Matiere_.class

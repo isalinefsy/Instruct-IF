@@ -10,6 +10,8 @@ import javax.persistence.Id;
 import javax.persistence.ManyToOne;
 import javax.persistence.Temporal;
 import java.io.Serializable;
+import javax.persistence.Inheritance;
+import javax.persistence.InheritanceType;
 
 /*
  * To change this license header, choose License Headers in Project Properties.
@@ -23,6 +25,7 @@ import java.io.Serializable;
  */
 
 @Entity
+@Inheritance (strategy = InheritanceType.JOINED)
 public class Intervenant implements Serializable {
     ///Atributs
     @Id
@@ -33,7 +36,6 @@ public class Intervenant implements Serializable {
     private String tel;
     private int niveauMin;
     private int niveauMax;
-    private String typeEtablissement;
     private boolean etat;
     @Column(unique=true)
     private String mail;
@@ -43,15 +45,18 @@ public class Intervenant implements Serializable {
     public Intervenant() {
     }
 
-    public Intervenant(String nom, String prenom, String tel, int niveauMin, int niveauMax, String typeEtablissement, String mail, String motDePasse) {
+    public Intervenant(String nom, String prenom, String tel, int niveauMin, int niveauMax, String mail, String motDePasse) {
         this.nom = nom;
         this.prenom = prenom;
         this.tel = tel;
         this.niveauMin = niveauMin;
         this.niveauMax = niveauMax;
-        this.typeEtablissement = typeEtablissement;
         this.mail = mail;
         this.motDePasse = motDePasse;
+    }
+
+    public String getMotDePasse() {
+        return motDePasse;
     }
 
     
@@ -59,9 +64,10 @@ public class Intervenant implements Serializable {
 
     @Override
     public String toString() {
-        return "Eleve " + "#" + id + ": " + nom + " " + prenom + " <" + mail + "> ";
+        return "Intervenant " + "#" + id + ": " + nom + " " + prenom + " <" + mail + "> ";
     }
     //le but de la fonction toString est de renvoyer sans jamais afficher
+
     
     
     

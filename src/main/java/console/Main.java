@@ -4,7 +4,9 @@ import dao.JpaUtil;
 import java.io.IOException;
 import java.util.List;
 import metier.model.Eleve;
+import metier.model.Intervenant;
 import metier.service.Service;
+import org.apache.http.ParseException;
 
 /*
  * To change this license header, choose License Headers in Project Properties.
@@ -184,12 +186,26 @@ public class Main {
 //
 //        JpaUtil.fermerFabriquePersistance();
 //    }  
+    public static Intervenant testerAuthByEmailIntervenant() throws ParseException {
+        Service s = new Service();
+        Intervenant in = s.authentificationIntervenant("sfavro@gmail.com", "mdp1");
+        if (in == null) {
+            System.out.println("Echec de l'authentification authentification, veuillez ré-essayer");
+        } else {
+            System.out.println("L'authentification est un succès : " + in);
+        }
+        return in;
+    }
     
     public static void main(String[] args) throws IOException {
         // TODO code application logic here
         JpaUtil.creerFabriquePersistance();
-        testInscrns();
-        testAuthns();
+        //testInscrns();
+       // testAuthns();
+        Service service = new Service();
+        service.initialiserIntervenant();
+        service.initialiserMatiere();
+        testerAuthByEmailIntervenant();
         //testInscrAuth2();
         //testAuth();
         //testInscrAuth();
