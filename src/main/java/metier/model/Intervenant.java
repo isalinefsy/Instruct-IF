@@ -1,17 +1,15 @@
 package metier.model;
 
 
-import java.util.Date;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.ManyToOne;
-import javax.persistence.Temporal;
 import java.io.Serializable;
 import javax.persistence.Inheritance;
 import javax.persistence.InheritanceType;
+import javax.persistence.OneToOne;
 
 /*
  * To change this license header, choose License Headers in Project Properties.
@@ -34,12 +32,15 @@ public class Intervenant implements Serializable {
     private String nom;
     private String prenom;
     private String tel;
-    private int niveauMin;
-    private int niveauMax;
+    private int niveauMin; //le plus petit niveau est la 6 eme soit 6
+    private int niveauMax; //le plus grand niveau est la terminale soit 0 
     private boolean etat;
     @Column(unique=true)
     private String mail;
     private String motDePasse;
+    @OneToOne
+    private Cours coursActuel;
+
     
     
     public Intervenant() {
@@ -53,10 +54,35 @@ public class Intervenant implements Serializable {
         this.niveauMax = niveauMax;
         this.mail = mail;
         this.motDePasse = motDePasse;
+        this.coursActuel = null;
+        this.etat = true;
+    }
+
+    public String getMail() {
+        return mail;
+    }
+    public String getTel() {
+        return tel;
+    }
+
+    public String getNom() {
+        return nom;
     }
 
     public String getMotDePasse() {
         return motDePasse;
+    }
+
+    public String getPrenom() {
+        return prenom;
+    }
+
+    public void setEtat(boolean etat) {
+        this.etat = etat;
+    }
+
+    public void setCoursActuel(Cours coursActuel) {
+        this.coursActuel = coursActuel;
     }
 
     
@@ -67,6 +93,7 @@ public class Intervenant implements Serializable {
         return "Intervenant " + "#" + id + ": " + nom + " " + prenom + " <" + mail + "> ";
     }
     //le but de la fonction toString est de renvoyer sans jamais afficher
+
 
     
     

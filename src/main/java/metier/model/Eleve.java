@@ -9,6 +9,9 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.ManyToOne;
 import javax.persistence.Temporal;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+
 
 /*
  * To change this license header, choose License Headers in Project Properties.
@@ -36,7 +39,7 @@ public class Eleve {
     private String motDePasse;
     @ManyToOne
     private Etablissement etablissement;
-    private int niveau; 
+    private int niveau;
     
     public Eleve() {
     }
@@ -97,12 +100,18 @@ public class Eleve {
     
     
 
-    public Eleve(String nom, String prenom, String mail, String mdp, int niveau) {
+    public Eleve(String nom, String prenom, String dateNaissance, String mail, String mdp, int niveau) {
         this.nom = nom;
         this.prenom = prenom;
         this.mail = mail;
         this.motDePasse = mdp;
         this.niveau = niveau;
+        try {
+            SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd"); // Adjust the date format as per your input string
+            this.dateNaissance = dateFormat.parse(dateNaissance);
+        } catch (ParseException e) {
+            e.printStackTrace(); // Handle the parse exception appropriately
+        }
   
     }
 

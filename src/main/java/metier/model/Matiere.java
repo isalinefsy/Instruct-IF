@@ -7,6 +7,7 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import java.io.Serializable;
+import javax.persistence.Column;
 
 
 /*
@@ -21,10 +22,11 @@ import java.io.Serializable;
  */
 
 @Entity
-public class Matiere implements Serializable {
+public class Matiere {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
+    @Column(unique=true)
     private String nomMatiere;
 
      public Matiere() {

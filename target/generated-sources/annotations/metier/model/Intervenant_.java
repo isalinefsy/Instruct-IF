@@ -3,12 +3,14 @@ package metier.model;
 import javax.annotation.Generated;
 import javax.persistence.metamodel.SingularAttribute;
 import javax.persistence.metamodel.StaticMetamodel;
+import metier.model.Cours;
 
-@Generated(value="EclipseLink-2.5.2.v20140319-rNA", date="2024-03-27T11:07:38")
+@Generated(value="EclipseLink-2.5.2.v20140319-rNA", date="2024-04-02T08:55:47")
 @StaticMetamodel(Intervenant.class)
 public class Intervenant_ { 
 
     public static volatile SingularAttribute<Intervenant, String> motDePasse;
+    public static volatile SingularAttribute<Intervenant, Cours> coursActuel;
     public static volatile SingularAttribute<Intervenant, String> mail;
     public static volatile SingularAttribute<Intervenant, String> tel;
     public static volatile SingularAttribute<Intervenant, Long> id;

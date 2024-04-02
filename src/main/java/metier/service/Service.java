@@ -10,12 +10,17 @@ import console.Message;
 import dao.EleveDao;
 import dao.EtablissementDao;
 import dao.IntervenantDao;
+import dao.CoursDao;
 import util.GeoNetApi;
 import dao.JpaUtil;
 import dao.MatiereDao;
 import java.io.IOException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
+import java.util.Set;
 import metier.model.Autre;
+import metier.model.Cours;
 import metier.model.Eleve;
 import metier.model.Enseignant;
 import metier.model.Etablissement;
@@ -38,30 +43,29 @@ public class Service {
         boolean return_value = true;
         Etablissement etablissement = null;
         List<String> info;
-        boolean needToCreate= false;
-        
+        boolean needToCreate = false;
+
         try {
             JpaUtil.creerContextePersistance();
-            
-            
+
             etablissement = etablissementdao.findByCode(code);
             if (etablissement == null) {
-            info = educApi.getInformationLycee(code);
-            //si l'établissement est un college, info est null
-            if (info == null) {
-                info = educApi.getInformationCollege(code);
+                info = educApi.getInformationLycee(code);
+                //si l'établissement est un college, info est null
+                if (info == null) {
+                    info = educApi.getInformationCollege(code);
+                }
+                LatLng coordsEtablissement = GeoNetApi.getLatLng(info.get(1) + " " + info.get(4)); // On envoie le nom de l'établissement et de la commune
+                etablissement = new Etablissement(info.get(0), info.get(1), info.get(4), coordsEtablissement, info.get(8));
+                needToCreate = true;
             }
-            LatLng coordsEtablissement = GeoNetApi.getLatLng(info.get(1) + " " + info.get(4)); // On envoie le nom de l'établissement et de la commune
-            etablissement = new Etablissement(info.get(0), info.get(1), info.get(4), coordsEtablissement, info.get(8));
-            needToCreate = true;
-            }
-            
+
             eleve.setEtablissement(etablissement);
-            
+
             JpaUtil.ouvrirTransaction();
-            
-            if (needToCreate){
-            etablissementdao.create(etablissement);
+
+            if (needToCreate) {
+                etablissementdao.create(etablissement);
             }
             elevedao.create(eleve);
 
@@ -88,11 +92,11 @@ public class Service {
             JpaUtil.creerContextePersistance();
 
             eleve = elevedao.findByMail(mail);
-            
-            if (eleve!=null && !eleve.getMotDePasse().equals(motDePasse)) {
+
+            if (eleve != null && !eleve.getMotDePasse().equals(motDePasse)) {
                 eleve = null;
             }
-            
+
             JpaUtil.fermerContextePersistance();
 
         } catch (Exception ex) {
@@ -102,9 +106,8 @@ public class Service {
         }
         return eleve;
     }
-    
-    
-    public boolean initialiserIntervenant(){
+
+    public boolean initialiserIntervenant() {
         IntervenantDao emDao = new IntervenantDao();
         Intervenant e1 = new Etudiant("FAVRO", "Samuel", "0642049305", 6, 0, "sfavro@gmail.com", "mdp1", "INSA", "Informatique");
         Intervenant e2 = new Autre("DEKEW", "Simon", "0713200950", 6, 0, "sdekew4845@gmail.com", "mdp1", "Chercheur");
@@ -130,8 +133,8 @@ public class Service {
             JpaUtil.fermerContextePersistance();
         }
         return etat;
-    } 
-    
+    }
+
     public Intervenant authentificationIntervenant(String mail, String mdp) {
         Intervenant i = null;
         IntervenantDao idao = new IntervenantDao();
@@ -233,23 +236,108 @@ public class Service {
         try {
             JpaUtil.creerContextePersistance();
 
-            JpaUtil.ouvrirTransaction();
-
             desEleves = elevedao.selectEleve();
-
-            JpaUtil.validerTransaction();
 
             JpaUtil.fermerContextePersistance();
 
         } catch (Exception ex) {
             ex.printStackTrace();
-            JpaUtil.annulerTransaction();
-
         }
 
         return desEleves;
     }
 
+    public List<Matiere> consulterListeMatieres() {
+
+        List<Matiere> desMatieres = null;
+        MatiereDao matieredao = new MatiereDao();
+
+        try {
+            JpaUtil.creerContextePersistance();
+
+            desMatieres = matieredao.findAll();
+
+            JpaUtil.fermerContextePersistance();
+
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
+
+        return desMatieres;
+    }
+
+    public List<Intervenant> consulterListeIntervenants() {
+
+        List<Intervenant> desIntervenants = null;
+        IntervenantDao intervenantdao = new IntervenantDao();
+
+        try {
+            JpaUtil.creerContextePersistance();
+
+            desIntervenants = intervenantdao.findAll();
+
+            JpaUtil.fermerContextePersistance();
+
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
+
+        return desIntervenants;
+    }
+    
+    
+
+    public Cours demanderCours(Eleve eleve, String nomMatiere, String message) {
+        Cours cours = null;
+
+        try {
+            JpaUtil.creerContextePersistance();
+            int niveau = eleve.getNiveau();
+            IntervenantDao intervenantDao = new IntervenantDao();
+            CoursDao coursdao = new CoursDao();
+            MatiereDao matieredao = new MatiereDao();
+            
+            Intervenant intervenant = intervenantDao.findAvailableIntervenant(niveau);
+            Matiere m = matieredao.findByName(nomMatiere);
+            cours = new Cours(m, eleve, intervenant, message);
+           
+            JpaUtil.ouvrirTransaction();
+            coursdao.create(cours);
+            //on affecte le cours à l'intervenant et on le rend indisponible
+            intervenant.setCoursActuel(cours);
+            intervenant.setEtat(false);
+            JpaUtil.validerTransaction();
+            
+            //il faut maintenant contacter l'intervenant
+            SimpleDateFormat heure = new SimpleDateFormat("HH'h'mm");
+            String corps = "Bonjour " + intervenant.getPrenom() + ". Merci de prendre en charge la demande de soutien en \""
+                    + m.getNomMatiere() + "\" demandée à " + heure.format(cours.getDate()) + " par " + eleve.getPrenom()
+                    + " en classe de " + eleve.getNiveau() + "ème.";
+            Message.envoyerNotification(intervenant.getTel(), "Pour : " + intervenant.getPrenom() + " " + intervenant.getNom() + "\n" + corps);
+        } catch (Exception ex) {
+            ex.printStackTrace();
+            JpaUtil.annulerTransaction();
+        } finally {
+            JpaUtil.fermerContextePersistance();
+
+        }
+        return cours;
+    }
+
+    public void lancerVisio(Intervenant i){
+        CoursDao coursdao = new CoursDao();
+        try{
+        JpaUtil.creerContextePersistance();
+        Cours c = coursdao.findPendingByIntervenant(i);
+        //c.setEtatCours(metier.model.etat.EN_COURS);
+        System.out.println("----VISIO----");
+        }catch(Exception ex){
+            ex.printStackTrace();
+        }finally{
+            JpaUtil.fermerContextePersistance();
+        }
+    }
+    
     public Service() {
     }
 

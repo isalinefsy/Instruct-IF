@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.util.List;
 import metier.model.Eleve;
 import metier.model.Intervenant;
+import metier.model.Matiere;
 import metier.service.Service;
 import org.apache.http.ParseException;
 
@@ -51,13 +52,14 @@ public class Main {
         
         String nom = Saisie.lireChaine("Saisir un Nom");
         String prenom = Saisie.lireChaine("Saisir un Prénom");
+        String dateNaissance = Saisie.lireChaine("Saisir une date de naissance au format YYYY/MM/DD");
         String email = Saisie.lireChaine("Saisir un E-mail");
         String mdp = Saisie.lireChaine("Saisir un Mot de Passe");
         String codeEt = Saisie.lireChaine("Saisir un code etablissement");
         int niveau = Saisie.lireInteger("Saisir votre classe (de 0 à 6)");
         
         
-        Eleve eleve1 = new Eleve(nom, prenom, email, mdp, niveau);
+        Eleve eleve1 = new Eleve(nom, prenom, dateNaissance, email, mdp, niveau);
         
         Service service = new Service();
         service.inscrireEleve(eleve1, codeEt);
@@ -67,17 +69,18 @@ public class Main {
         JpaUtil.fermerFabriquePersistance();
     }
     
-    public static void testInscrns() throws IOException{
-    
-        Eleve eleve1 = new Eleve("le vasseur", "florian", "flv@gmail.com", "titi", 6);
-        Eleve eleve2 = new Eleve("le vasseur", "isa", "isa@gmail.com", "titi", 6);
-        
-        Service service = new Service();
-        service.inscrireEleve(eleve1, "0691664J");
-        service.inscrireEleve(eleve2, "0691664J");
-           
-    }
-    public static void testAuthns() throws IOException{
+//    public static void testInscrns() throws IOException{
+//    
+//        Eleve eleve1 = new Eleve("le vasseur", "florian", "flv@gmail.com", "titi", 6);
+//        Eleve eleve2 = new Eleve("le vasseur", "isa", "isa@gmail.com", "titi", 6);
+//        
+//        Service service = new Service();
+//        service.inscrireEleve(eleve1, "0691664J");
+//        service.inscrireEleve(eleve2, "0691664J");
+//           
+//    }
+
+    public static Eleve testAuthElevens() throws IOException{
         
         Service service = new Service();
         Eleve eleve = service.authentifierEleve("flv@gmail.com", "titi");
@@ -89,9 +92,22 @@ public class Main {
             System.out.println("Authentification succeeded");
             System.out.println(eleve.toString());
         }
+        return eleve;
     
     }
     
+    public static void testDemandeCours(Eleve e1) throws IOException{
+    
+        
+        Service service = new Service();
+        //service.initialiserIntervenant();
+        //service.initialiserMatiere();
+        String matiere = "Français";
+        service.demanderCours(e1, matiere, "J'ai besoin d'aide");
+        
+        
+           
+    }
     
     //public static void testInscrAuth2(){
 //        JpaUtil.creerFabriquePersistance();
@@ -196,22 +212,74 @@ public class Main {
         }
         return in;
     }
-    
-    public static void main(String[] args) throws IOException {
-        // TODO code application logic here
-        JpaUtil.creerFabriquePersistance();
-        //testInscrns();
-       // testAuthns();
-        Service service = new Service();
-        service.initialiserIntervenant();
-        service.initialiserMatiere();
-        testerAuthByEmailIntervenant();
-        //testInscrAuth2();
-        //testAuth();
-        //testInscrAuth();
-        //testFindById();
-        //testListClient();
-        JpaUtil.fermerFabriquePersistance();
+
+    public static void testLancerVisio(){
+        Service s = new Service();
+        Intervenant in = s.authentificationIntervenant("vhernendez@gmail.com", "mdp1");
+        if (in == null) {
+            System.out.println("Echec de l'authentification authentification, veuillez ré-essayer");
+        } else {
+            System.out.println("L'authentification est un succès : " + in);
+        }
+        s.lancerVisio(in);
     }
-    
+
+    public static void initialisationTest() throws ParseException, IOException {
+        Service s = new Service();
+;
+        //initialisation des matières
+        s.initialiserMatiere();
+
+        //inscription préalable de 3 élèves venant de 2 lycées différents.
+
+        Eleve e1 = new Eleve("le vasseur", "florian", "2004/07/05", "flv@gmail.com", "titi", 6);
+        s.inscrireEleve(e1, "0921159K");
+        Eleve e2 = new Eleve("le vasseur", "isa", "2004/07/05", "isa@gmail.com", "titi", 6);
+        s.inscrireEleve(e2, "0332490C");
+        Eleve e3 = new Eleve("Blanc", "Chantal", "2004/07/05", "cblanc@gmail.com", "mdp", 0);
+        s.inscrireEleve(e3, "0332490C");
+        Eleve e4 = new Eleve("Noir", "Chantal", "2004/07/05", "cnoir@gmail.com", "mdp", 2);
+        s.inscrireEleve(e4, "0332490C");
+
+        
+        
+
+        //inscription de quelques intervenants
+        s.initialiserIntervenant();
+        
+      
+        System.out.println("Boujour et Bienvenue sur INSTRUCT'IF.\n");
+        
+        //Presentation des matières
+        List<Matiere> listMatiere = s.consulterListeMatieres();
+        System.out.println("Les matières disponibles sur l'application sont : \n");
+        for (Matiere m : listMatiere) {
+            System.out.println(m);
+        }
+
+        //Presentation des élèves et intervenants
+        System.out.println(" Voici les élèves inscrits et les intervenants");
+        List<Eleve> le = s.consulterListeEleves();
+        for (Eleve e : le) {
+            System.out.println(e.toString());
+        }
+        List<Intervenant> li = s.consulterListeIntervenants();
+        for (Intervenant i : li) {
+            System.out.println(i.toString());
+        }
+
+        System.err.println("Tout le monde a été initialisé");
+    }
+
+    public static void main(String[] args) throws ParseException, IOException {
+            JpaUtil.creerFabriquePersistance();
+            initialisationTest();
+            testerAuthByEmailIntervenant();
+            //OUBLIEZ PAS DE DEMANDER POUR L'HEURE ET LES MINUTES, ZOUBI
+            Eleve e1 = testAuthElevens();
+            testDemandeCours(e1);
+            testLancerVisio();
+            JpaUtil.fermerFabriquePersistance();
+        }
+
 }
