@@ -69,6 +69,10 @@ public class Intervenant implements Serializable {
         return id;
     }
 
+    public Cours getCoursActuel() {
+        return coursActuel;
+    }
+
     public String getNom() {
         return nom;
     }

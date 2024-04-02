@@ -16,6 +16,9 @@ import javax.persistence.Id;
  *
  * @author flevasseur
  */
+// 0240005A  /  0240006B  (Bergerac les deux) -------------------------------------------------- à rajouter pour tester le count etablissement by commune
+
+
 @Entity
 public class Etablissement {
     @Id
@@ -37,6 +40,10 @@ public class Etablissement {
         this.commune = commune;
         this.coordonnees = coordonnees;
         this.IPS = IPS;
+    }
+
+    public String getCommune() {
+        return commune;
     }
 
 

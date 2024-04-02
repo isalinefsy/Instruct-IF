@@ -5,9 +5,13 @@
  */
 package dao;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import static javafx.scene.input.KeyCode.T;
 import javax.persistence.EntityManager;
 import javax.persistence.Query;
+import javax.persistence.TypedQuery;
 import metier.model.Etablissement;
 
 /**
@@ -45,7 +49,21 @@ public class EtablissementDao {
         List<Etablissement> resultat = (List<Etablissement>)query.getResultList();
         return resultat;
     }
+    
+    public List<Object[]> countEtablissementByCommune(){
+        EntityManager em = JpaUtil.obtenirContextePersistance();
+        String jpql = "select e.commune, count(e) as nbParCommune from Etablissement e group by e.commune order by nbParCommune";
+        TypedQuery <Object[]> query = em.createQuery(jpql, Object[].class);
+        List<Object[]> resultList = query.getResultList(); 
+        return resultList;
+    }
 
+    public List<Etablissement> findAll() {
+        String s = "select e from Etablissement e";
+        TypedQuery query = JpaUtil.obtenirContextePersistance().createQuery(s, Etablissement.class);
+        return query.getResultList();
+    }
+    
     public EtablissementDao() {
     }
     

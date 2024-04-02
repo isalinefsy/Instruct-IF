@@ -236,6 +236,13 @@ public class Main {
         } else {
             System.out.println("L'authentification est un succès : " + in);
         }
+        
+        Cours c = s.CheckDemandeSoutien(in);
+        if (c==null){
+            System.out.println("Pas de cours");
+        }else{
+        System.out.println(c.toString());
+        }
         return in;
     }
 
@@ -349,18 +356,34 @@ public class Main {
         System.err.println("Tout le monde a été initialisé");
     }
 
+    
+    
+    public static void testStats(){
+        Service s = new Service();
+        List <Object[]> nbEtabParCommune = s.statNbEtablissementParCommune();
+        for (Object[] o : nbEtabParCommune){
+            String commune = (String) o[0];
+            long nbEtab = (long) o[1];
+            System.out.print(commune + " : " + nbEtab + " établissements utilisant Instruct'if\n");
+        }
+    }
+    
+    
     public static void main(String[] args) throws ParseException, IOException {
             JpaUtil.creerFabriquePersistance();
             initialisationTest();
-            testerAuthByEmailIntervenant1();
+            testerAuthByEmailIntervenant2();
             //OUBLIEZ PAS DE DEMANDER POUR L'HEURE ET LES MINUTES, ZOUBI
             Eleve e1 = testAuthEleve1();
             testDemandeCours(e1);
+            testerAuthByEmailIntervenant2();
             //testLancerVisio();
             testLancerEtFinVisioIntervenant();
             testHistoriqueEleve(); 
             testHistoriqueIntervenant();
+            testStats();
             JpaUtil.fermerFabriquePersistance();
+            
         }
 
 }
