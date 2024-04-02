@@ -3,6 +3,7 @@ package console;
 import dao.JpaUtil;
 import java.io.IOException;
 import java.util.List;
+import metier.model.Cours;
 import metier.model.Eleve;
 import metier.model.Intervenant;
 import metier.model.Matiere;
@@ -80,10 +81,25 @@ public class Main {
 //           
 //    }
 
-    public static Eleve testAuthElevens() throws IOException{
+    public static Eleve testAuthEleve1() throws IOException{
         
         Service service = new Service();
         Eleve eleve = service.authentifierEleve("flv@gmail.com", "titi");
+        
+        if(eleve == null)
+        {
+            System.out.println("Authentification failed");
+        } else {
+            System.out.println("Authentification succeeded");
+            System.out.println(eleve.toString());
+        }
+        return eleve;
+    
+    }
+    public static Eleve testAuthEleve2() throws IOException{
+        
+        Service service = new Service();
+        Eleve eleve = service.authentifierEleve("isa@gmail.com", "titi");
         
         if(eleve == null)
         {
@@ -202,9 +218,19 @@ public class Main {
 //
 //        JpaUtil.fermerFabriquePersistance();
 //    }  
-    public static Intervenant testerAuthByEmailIntervenant() throws ParseException {
+    public static Intervenant testerAuthByEmailIntervenant1() throws ParseException {
         Service s = new Service();
         Intervenant in = s.authentificationIntervenant("sfavro@gmail.com", "mdp1");
+        if (in == null) {
+            System.out.println("Echec de l'authentification authentification, veuillez ré-essayer");
+        } else {
+            System.out.println("L'authentification est un succès : " + in);
+        }
+        return in;
+    }
+    public static Intervenant testerAuthByEmailIntervenant2() throws ParseException {
+        Service s = new Service();
+        Intervenant in = s.authentificationIntervenant("vhernendez@gmail.com", "mdp1");
         if (in == null) {
             System.out.println("Echec de l'authentification authentification, veuillez ré-essayer");
         } else {
@@ -221,7 +247,59 @@ public class Main {
         } else {
             System.out.println("L'authentification est un succès : " + in);
         }
-        s.lancerVisio(in);
+        Cours c = s.lancerVisio(in);
+    }
+    
+    public static void testLancerEtFinVisioEleve(){
+        Service s = new Service();
+        Intervenant in = s.authentificationIntervenant("vhernendez@gmail.com", "mdp1");
+        if (in == null) {
+            System.out.println("Echec de l'authentification authentification, veuillez ré-essayer");
+        } else {
+            System.out.println("L'authentification est un succès : " + in);
+        }
+        Cours c = s.lancerVisio(in);
+        c = s.terminerVisio(c);
+        int note = Saisie.lireInteger("Saisir une note : 1 / 2 / 3");
+        s.noterCours(c, note); 
+    }
+    public static void testLancerEtFinVisioIntervenant(){
+        Service s = new Service();
+        Intervenant in = s.authentificationIntervenant("vhernendez@gmail.com", "mdp1");
+        if (in == null) {
+            System.out.println("Echec de l'authentification authentification, veuillez ré-essayer");
+        } else {
+            System.out.println("L'authentification est un succès : " + in);
+        }
+        Cours c = s.lancerVisio(in);
+        c = s.terminerVisio(c);
+        String bilan = Saisie.lireChaine("Envoyez un bilan à "+ c.getEleve().getPrenom());
+        s.EnvoyerBilanCours(c, bilan); 
+    }
+    
+    public static void testHistoriqueEleve() throws IOException{
+        Eleve e = testAuthEleve2();
+        Service s = new Service();
+        List<Cours> historique = s.getHistoriqueEleve(e);
+        if (historique.isEmpty()){
+            System.out.println("vous n'avez encore jamais fait de soutien");
+        }else{
+        for (Cours c : historique){
+            System.out.println(c.toString());
+            }
+        }
+    }
+    public static void testHistoriqueIntervenant() throws IOException{
+        Intervenant i = testerAuthByEmailIntervenant2();
+        Service s = new Service();
+        List<Cours> historique = s.getHistoriqueIntervenant(i);
+        if (historique.isEmpty()){
+            System.out.println("vous n'avez encore jamais donné de soutien");
+        }else{
+        for (Cours c : historique){
+            System.out.println(c.toString());
+            }
+        }
     }
 
     public static void initialisationTest() throws ParseException, IOException {
@@ -274,11 +352,14 @@ public class Main {
     public static void main(String[] args) throws ParseException, IOException {
             JpaUtil.creerFabriquePersistance();
             initialisationTest();
-            testerAuthByEmailIntervenant();
+            testerAuthByEmailIntervenant1();
             //OUBLIEZ PAS DE DEMANDER POUR L'HEURE ET LES MINUTES, ZOUBI
-            Eleve e1 = testAuthElevens();
+            Eleve e1 = testAuthEleve1();
             testDemandeCours(e1);
-            testLancerVisio();
+            //testLancerVisio();
+            testLancerEtFinVisioIntervenant();
+            testHistoriqueEleve(); 
+            testHistoriqueIntervenant();
             JpaUtil.fermerFabriquePersistance();
         }
 

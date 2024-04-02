@@ -311,7 +311,7 @@ public class Service {
             //il faut maintenant contacter l'intervenant
             SimpleDateFormat heure = new SimpleDateFormat("HH'h'mm");
             String corps = "Bonjour " + intervenant.getPrenom() + ". Merci de prendre en charge la demande de soutien en \""
-                    + m.getNomMatiere() + "\" demandée à " + heure.format(cours.getDate()) + " par " + eleve.getPrenom()
+                    + m.getNomMatiere() + "\" demandée à " + heure.format(cours.getLaDate()) + " par " + eleve.getPrenom()
                     + " en classe de " + eleve.getNiveau() + "ème.";
             Message.envoyerNotification(intervenant.getTel(), "Pour : " + intervenant.getPrenom() + " " + intervenant.getNom() + "\n" + corps);
         } catch (Exception ex) {
@@ -324,19 +324,122 @@ public class Service {
         return cours;
     }
 
-    public void lancerVisio(Intervenant i){
+    public Cours lancerVisio(Intervenant i){
         CoursDao coursdao = new CoursDao();
+        Date d = new Date();
+        Cours c = null;
         try{
         JpaUtil.creerContextePersistance();
-        Cours c = coursdao.findPendingByIntervenant(i);
-        //c.setEtatCours(metier.model.etat.EN_COURS);
+        c = coursdao.findPendingByIntervenant(i);
+        JpaUtil.ouvrirTransaction();
+        c.setEtatCours(metier.model.etat.EN_COURS);
+        c.setDebutVisio(d);
+        JpaUtil.validerTransaction();
         System.out.println("----VISIO----");
+        }catch(Exception ex){
+            ex.printStackTrace();
+            JpaUtil.annulerTransaction();
+        }finally{
+            JpaUtil.fermerContextePersistance();
+        }
+        return c;
+    }
+    
+    public Cours terminerVisio(Cours c){
+        CoursDao coursdao = new CoursDao();
+        Date d = new Date();
+        Cours cours = null;
+        try{
+        JpaUtil.creerContextePersistance();      
+        cours = coursdao.findById(c.getId());
+        JpaUtil.ouvrirTransaction();
+        cours.setEtatCours(metier.model.etat.TERMINE);
+        
+        cours.setFinVisio(d);
+        JpaUtil.validerTransaction();
+        System.out.println("----FIN VISIO----");
+        }catch(Exception ex){
+            ex.printStackTrace();
+            JpaUtil.annulerTransaction();
+        }finally{
+            JpaUtil.fermerContextePersistance();
+        }
+        return cours;
+    }
+    
+    
+    public void noterCours(Cours c, int note){
+        CoursDao coursdao = new CoursDao();
+        Cours cours = null;
+        try{
+        JpaUtil.creerContextePersistance();      
+        cours = coursdao.findById(c.getId());
+        JpaUtil.ouvrirTransaction();
+        cours.setNote(note);
+        JpaUtil.validerTransaction();
+        }catch(Exception ex){
+            ex.printStackTrace();
+            JpaUtil.annulerTransaction();
+        }finally{
+            JpaUtil.fermerContextePersistance();
+        }
+    }
+    
+    public void EnvoyerBilanCours(Cours c, String bilan){
+        CoursDao coursdao = new CoursDao();
+        IntervenantDao intervenantDao = new IntervenantDao();
+        Cours cours = null;
+        Intervenant i = null;
+        Eleve e = c.getEleve();
+        SimpleDateFormat heure = new SimpleDateFormat("HH'h'mm");
+        String corps = "Bonjour " + e.getPrenom() + ", voici le bilan de ta session de soutien en \""
+            + c.getMatiere().getNomMatiere() + "\" :\n" + bilan;
+        Message.envoyerMail(c.getIntervenant().getMail(), e.getMail(),"[BILAN visio]" ,corps);
+        try{
+        JpaUtil.creerContextePersistance();      
+        cours = coursdao.findById(c.getId());
+        i = intervenantDao.findById(c.getIntervenant().getId());
+        JpaUtil.ouvrirTransaction();
+        cours.setBilan(bilan);
+        i.setEtat(true);
+        i.setCoursActuel(null);
+        JpaUtil.validerTransaction();
+        }catch(Exception ex){
+            ex.printStackTrace();
+            JpaUtil.annulerTransaction();
+        }finally{
+            JpaUtil.fermerContextePersistance();
+        }
+    }
+    
+    public List<Cours> getHistoriqueEleve(Eleve e){
+    CoursDao coursdao = new CoursDao();
+    List<Cours> lesCours = null;
+    try{
+        JpaUtil.creerContextePersistance();      
+        lesCours = coursdao.findAllOfEleve(e);
         }catch(Exception ex){
             ex.printStackTrace();
         }finally{
             JpaUtil.fermerContextePersistance();
         }
-    }
+    return lesCours;
+}   
+    public List<Cours> getHistoriqueIntervenant(Intervenant i){
+    CoursDao coursdao = new CoursDao();
+    List<Cours> lesCours = null;
+    try{
+        JpaUtil.creerContextePersistance();      
+        lesCours = coursdao.findAllOfIntervenant(i);
+        }catch(Exception ex){
+            ex.printStackTrace();
+        }finally{
+            JpaUtil.fermerContextePersistance();
+        }
+    return lesCours;
+}   
+    
+    
     
     public Service() {
     }

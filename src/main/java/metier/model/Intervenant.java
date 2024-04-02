@@ -65,6 +65,10 @@ public class Intervenant implements Serializable {
         return tel;
     }
 
+    public Long getId() {
+        return id;
+    }
+
     public String getNom() {
         return nom;
     }

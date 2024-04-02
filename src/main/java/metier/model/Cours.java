@@ -36,15 +36,47 @@ public class Cours implements Serializable {
     private Matiere matiere;
     @ManyToOne
     private Eleve eleve;
+    @ManyToOne
+    private Intervenant intervenant;
     @Temporal(TemporalType.DATE)
-    private Date la_date;
-    @Enumerated(EnumType.ORDINAL)
+    private Date laDate;
+    @Enumerated(EnumType.STRING)
     private etat etatCours;
     private String commentaire;
     private int note;
-    
-    @ManyToOne
-    private Intervenant intervenant;
+    private String bilan;
+    @Temporal(TemporalType.DATE)
+    private Date debutVisio;
+    @Temporal(TemporalType.DATE)
+    private Date finVisio;
+
+    public Date getLaDate() {
+        return laDate;
+    }
+
+    public Date getDebutVisio() {
+        return debutVisio;
+    }
+
+    public void setDebutVisio(Date debutVisio) {
+        this.debutVisio = debutVisio;
+    }
+
+    public Date getFinVisio() {
+        return finVisio;
+    }
+
+    public void setFinVisio(Date finVisio) {
+        this.finVisio = finVisio;
+    }
+
+    public String getBilan() {
+        return bilan;
+    }
+
+    public void setBilan(String bilan) {
+        this.bilan = bilan;
+    }
     
     public Cours() {
     }
@@ -54,7 +86,7 @@ public class Cours implements Serializable {
         this.matiere = matiere;
         this.eleve = eleve;
         Date d = new Date();
-        this.la_date = d;
+        this.laDate = d;
         this.commentaire= commentaire;
         this.intervenant = intervenant;
         this.etatCours = etat.EN_ATTENTE;
@@ -99,14 +131,6 @@ public class Cours implements Serializable {
         this.note = note;
     }
 
-    public Date getDate() {
-        return la_date;
-    }
-
-    public void setDate(Date date) {
-        this.la_date = date;
-    }
-
     public Intervenant getIntervenant() {
         return intervenant;
     }
@@ -126,7 +150,7 @@ public class Cours implements Serializable {
 
     @Override
     public String toString() {
-        return "Cours{" + "id=" + id + ", matiere=" + matiere + ", eleve=" + eleve.getPrenom() + ", date=" + la_date + ", commentaire=" + commentaire + ", note=" + note + ", intervenant=" + intervenant.getPrenom() + '}';
+        return "Cours{" + "id=" + id + ", matiere=" + matiere + ", eleve=" + eleve.getPrenom() + ", date=" + laDate + ", commentaire=" + commentaire + ", note=" + note + ", intervenant=" + intervenant.getPrenom() + '}';
     }
 
 
