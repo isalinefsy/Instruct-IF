@@ -64,7 +64,7 @@ public class IntervenantDao {
 
         // Il manque des espaces entre les mots-clés et les clauses JPQL, ce qui peut provoquer des erreurs de syntaxe.
         
-        String jpql = "select i, count(c) as nb_cours from Intervenant i "
+        String jpql = "select i, count(c.id) as nb_cours from Intervenant i "
                 + "left join Cours c on c.intervenant = i " // Il manque le signe égal entre les tables jointes
                 + "where i.niveauMin >= :niveau "
                 + "AND i.niveauMax <= :niveau "
@@ -74,8 +74,6 @@ public class IntervenantDao {
         TypedQuery<Object[]> query = em.createQuery(jpql, Object[].class);
         query.setParameter("niveau", niveau); // Définition du paramètre ":niveau"
         List<Object[]> resultList = query.getResultList();
-
-        System.out.println("J'ai effectué une requete");
 
         // Il est possible que la liste soit vide, donc il faudrait vérifier cela avant de tenter d'accéder à son premier élément.
         

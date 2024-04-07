@@ -52,7 +52,7 @@ public class EtablissementDao {
     
     public List<Object[]> countEtablissementByCommune(){
         EntityManager em = JpaUtil.obtenirContextePersistance();
-        String jpql = "select e.commune, count(e) as nbParCommune from Etablissement e group by e.commune order by nbParCommune";
+        String jpql = "select e.commune, count(e.id) as nbParCommune from Etablissement e group by e.commune order by nbParCommune";
         TypedQuery <Object[]> query = em.createQuery(jpql, Object[].class);
         List<Object[]> resultList = query.getResultList(); 
         return resultList;

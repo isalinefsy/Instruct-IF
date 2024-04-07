@@ -6,7 +6,7 @@
 package metier.service;
 
 import com.google.maps.model.LatLng;
-import console.Message;
+import util.Message;
 import dao.EleveDao;
 import dao.EtablissementDao;
 import dao.IntervenantDao;
@@ -31,6 +31,7 @@ import metier.model.Etablissement;
 import metier.model.Etudiant;
 import metier.model.Intervenant;
 import metier.model.Matiere;
+import metier.model.etat;
 import util.EducNetApi;
 
 /**
@@ -112,21 +113,17 @@ public class Service {
     }
 
     public boolean initialiserIntervenant() {
-        IntervenantDao emDao = new IntervenantDao();
-        Intervenant e1 = new Etudiant("FAVRO", "Samuel", "0642049305", 6, 0, "sfavro@gmail.com", "mdp1", "INSA", "Informatique");
-        Intervenant e2 = new Autre("DEKEW", "Simon", "0713200950", 6, 0, "sdekew4845@gmail.com", "mdp1", "Chercheur");
-        Intervenant e3 = new Enseignant("LOU", "Flavien", "0437340532", 6, 0, "flavien.lou@gmail.com", "mp1", "Lycee");
-        Intervenant e4 = new Etudiant("GUOGUEN", "Gabriela", "0719843316", 6, 0, "gguoguen2418@gmail.com", "mdp1", "ENSIMAG", "Chimie");
-        Intervenant e5 = new Autre("HERNENDEZ", "Vincent", "0441564193", 6, 0, "vhernendez@gmail.com", "mdp1", "Ingenieur");
+        IntervenantDao intervenantdao = new IntervenantDao();
+        Intervenant e1 = new Etudiant("MARTIN", "Camille", "06 55 44 77 88", 6, 3, "cmartin@gmail.com", "mdp", "Sorbonne", "Langues orientales");
+        Intervenant e2 = new Autre("YOURCENAR", "Simone", "07 22 44 77 44", 5, 1, "syourcenar@gmail.com", "mdp", "Retraité");
+        Intervenant e3 = new Enseignant("ZOLA", "Anna", "06 33 22 11 44", 6, 0, "zanna@gmail.com", "mdp", "Supérieur");
         boolean etat = false;
         try {
             JpaUtil.creerContextePersistance();
             JpaUtil.ouvrirTransaction();
-            emDao.create(e1);
-            emDao.create(e2);
-            emDao.create(e3);
-            emDao.create(e4);
-            emDao.create(e5);
+            intervenantdao.create(e1);
+            intervenantdao.create(e2);
+            intervenantdao.create(e3);
             JpaUtil.validerTransaction();
             etat = true;
         } catch (Exception ex) {
@@ -207,30 +204,30 @@ public class Service {
         return etat;
     }
 
-    public Eleve rechercherEleveParID(Long id) {
-
-        Eleve client = null;
-        EleveDao clientdao = new EleveDao();
-
-        try {
-            JpaUtil.creerContextePersistance();
-
-            JpaUtil.ouvrirTransaction();
-
-            client = clientdao.findById(id);
-
-            JpaUtil.validerTransaction();
-
-            JpaUtil.fermerContextePersistance();
-
-        } catch (Exception ex) {
-            ex.printStackTrace();
-            JpaUtil.annulerTransaction();
-
-        }
-
-        return client;
-    }
+//    public Eleve rechercherEleveParID(Long id) {
+//
+//        Eleve client = null;
+//        EleveDao clientdao = new EleveDao();
+//
+//        try {
+//            JpaUtil.creerContextePersistance();
+//
+//            JpaUtil.ouvrirTransaction();
+//
+//            client = clientdao.findById(id);
+//
+//            JpaUtil.validerTransaction();
+//
+//            JpaUtil.fermerContextePersistance();
+//
+//        } catch (Exception ex) {
+//            ex.printStackTrace();
+//            JpaUtil.annulerTransaction();
+//
+//        }
+//
+//        return client;
+//    }
 
     public List<Eleve> consulterListeEleves() {
 
@@ -291,7 +288,6 @@ public class Service {
 
     public Cours demanderCours(Eleve eleve, String nomMatiere, String message) {
         Cours cours = null;
-
         try {
             JpaUtil.creerContextePersistance();
             int niveau = eleve.getNiveau();
@@ -317,15 +313,16 @@ public class Service {
                     + " en classe de " + eleve.getNiveau() + "ème.";
             Message.envoyerNotification(intervenant.getTel(), "Pour : " + intervenant.getPrenom() + " " + intervenant.getNom() + "\n" + corps);
         } catch (Exception ex) {
-            ex.printStackTrace();
             JpaUtil.annulerTransaction();
+            cours= null;
         } finally {
             JpaUtil.fermerContextePersistance();
 
         }
         return cours;
     }
-
+    
+    
     public Cours lancerVisio(Intervenant i) {
         CoursDao coursdao = new CoursDao();
         Date d = new Date();
@@ -337,7 +334,6 @@ public class Service {
             c.setEtatCours(metier.model.etat.EN_COURS);
             c.setDebutVisio(d);
             JpaUtil.validerTransaction();
-            System.out.println("----VISIO----");
         } catch (Exception ex) {
             ex.printStackTrace();
             JpaUtil.annulerTransaction();
@@ -359,7 +355,6 @@ public class Service {
 
             cours.setFinVisio(d);
             JpaUtil.validerTransaction();
-            System.out.println("----FIN VISIO----");
         } catch (Exception ex) {
             ex.printStackTrace();
             JpaUtil.annulerTransaction();
@@ -468,6 +463,20 @@ public class Service {
             JpaUtil.fermerContextePersistance();
         }
         return c;
+    }
+    
+    public boolean CheckVisioEnCours(Cours c){
+        CoursDao coursdao = new CoursDao();
+        Cours cours = null;
+        try {
+            JpaUtil.creerContextePersistance();
+             cours = coursdao.findById(c.getId());
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        } finally {
+            JpaUtil.fermerContextePersistance();
+        }
+        return cours.getEtatCours()!=metier.model.etat.EN_COURS;
     }
     
     
