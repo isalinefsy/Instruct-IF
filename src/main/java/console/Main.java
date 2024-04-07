@@ -5,385 +5,233 @@ import java.io.IOException;
 import java.util.List;
 import metier.model.Cours;
 import metier.model.Eleve;
+import metier.model.Etablissement;
 import metier.model.Intervenant;
-import metier.model.Matiere;
 import metier.service.Service;
-import org.apache.http.ParseException;
+import console.Saisie;
+import metier.model.Matiere;
 
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 
-/**
- *
- * @author ifoissey
- */
+// codes etablissement : 0691664J - 
+// intervenants : Intervenant e1 = new Etudiant("FAVRO", "Samuel", "0642049305", 6, 0, "sfavro@gmail.com", "mdp1", "INSA", "Informatique");
+//        Intervenant e2 = new Autre("DEKEW", "Simon", "0713200950", 6, 0, "sdekew4845@gmail.com", "mdp1", "Chercheur");
+//        Intervenant e3 = new Enseignant("LOU", "Flavien", "0437340532", 6, 0, "flavien.lou@gmail.com", "mp1", "Lycee");
+//        Intervenant e4 = new Etudiant("GUOGUEN", "Gabriela", "0719843316", 6, 0, "gguoguen2418@gmail.com", "mdp1", "ENSIMAG", "Chimie");
+//        Intervenant e5 = new Autre("HERNENDEZ", "Vincent", "0441564193", 6, 0, "vhernendez@gmail.com", "mdp1", "Ingenieur"); 
 public class Main {
 
-    /**
-     * @param args the command line arguments
-     */
-//    public static void testAuth(){
-//        JpaUtil.creerFabriquePersistance();
-//    
-//        Eleve eleve1 = new Eleve("Hugo", "Victor", "vhugo@paris.fr");
-//        eleve1.setMotDePasse("toto");
-//
-//        Service service = new Service();
-//        service.inscrireEleve(eleve1);
-//        Eleve testAuth = service.authentifierEleve("vhugo@paris.fr", "toto");
-//        if(testAuth == null)
-//        {
-//            System.out.println("Authentification failed");
-//        } else {
-//            System.out.println("Authentification succeeded");
-//        }
-//               
-//        System.out.println(eleve1.toString());
-// 
-//        
-//        JpaUtil.fermerFabriquePersistance();
-//    }
-    
-    public static void testInscr() throws IOException{
+    public static void main(String[] args) {
         JpaUtil.creerFabriquePersistance();
-
-        
-        String nom = Saisie.lireChaine("Saisir un Nom");
-        String prenom = Saisie.lireChaine("Saisir un Prénom");
-        String dateNaissance = Saisie.lireChaine("Saisir une date de naissance au format YYYY/MM/DD");
-        String email = Saisie.lireChaine("Saisir un E-mail");
-        String mdp = Saisie.lireChaine("Saisir un Mot de Passe");
-        String codeEt = Saisie.lireChaine("Saisir un code etablissement");
-        int niveau = Saisie.lireInteger("Saisir votre classe (de 0 à 6)");
-        
-        
-        Eleve eleve1 = new Eleve(nom, prenom, dateNaissance, email, mdp, niveau);
-        
         Service service = new Service();
-        service.inscrireEleve(eleve1, codeEt);
+        service.initialiserIntervenant();
+        service.initialiserMatiere();
 
-        System.out.println(eleve1.toString());
-
+        boolean quitter = false;
+        while (!quitter) {
+            afficherMenuPrincipal();
+            int choix = Saisie.lireInteger("Votre choix: ");
+            switch (choix) {
+                case 1:
+                    try {
+                    inscrireEleve(service);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+                break;
+                case 2:
+                    Eleve eleve = service.authentifierEleve(Saisie.lireChaine("Email: "), Saisie.lireChaine("Mot de passe: "));
+                    if (eleve != null) {
+                        gererMenuEleve(service, eleve);
+                    }
+                    break;
+                case 3:
+                    Intervenant intervenant = service.authentificationIntervenant(Saisie.lireChaine("Email: "), Saisie.lireChaine("Mot de passe: "));
+                    if (intervenant != null) {
+                        gererMenuIntervenant(service, intervenant);
+                    }
+                    break;
+                case 4:
+                    quitter = true;
+                    break;
+                default:
+                    System.out.println("Choix non valide, veuillez réessayer.");
+            }
+        }
         JpaUtil.fermerFabriquePersistance();
     }
-    
-//    public static void testInscrns() throws IOException{
-//    
-//        Eleve eleve1 = new Eleve("le vasseur", "florian", "flv@gmail.com", "titi", 6);
-//        Eleve eleve2 = new Eleve("le vasseur", "isa", "isa@gmail.com", "titi", 6);
-//        
-//        Service service = new Service();
-//        service.inscrireEleve(eleve1, "0691664J");
-//        service.inscrireEleve(eleve2, "0691664J");
-//           
-//    }
 
-    public static Eleve testAuthEleve1() throws IOException{
-        
-        Service service = new Service();
-        Eleve eleve = service.authentifierEleve("flv@gmail.com", "titi");
-        
-        if(eleve == null)
-        {
-            System.out.println("Authentification failed");
-        } else {
-            System.out.println("Authentification succeeded");
-            System.out.println(eleve.toString());
-        }
-        return eleve;
-    
-    }
-    public static Eleve testAuthEleve2() throws IOException{
-        
-        Service service = new Service();
-        Eleve eleve = service.authentifierEleve("isa@gmail.com", "titi");
-        
-        if(eleve == null)
-        {
-            System.out.println("Authentification failed");
-        } else {
-            System.out.println("Authentification succeeded");
-            System.out.println(eleve.toString());
-        }
-        return eleve;
-    
-    }
-    
-    public static void testDemandeCours(Eleve e1) throws IOException{
-    
-        
-        Service service = new Service();
-        //service.initialiserIntervenant();
-        //service.initialiserMatiere();
-        String matiere = "Français";
-        service.demanderCours(e1, matiere, "J'ai besoin d'aide");
-        
-        
-           
-    }
-    
-    //public static void testInscrAuth2(){
-//        JpaUtil.creerFabriquePersistance();
-//
-//        
-//        String nom = Saisie.lireChaine("Saisir un Nom");
-//        String prenom = Saisie.lireChaine("Saisir un Prénom");
-//        String email = Saisie.lireChaine("Saisir un E-mail");
-//        String mdp = Saisie.lireChaine("Saisir un mot de passe");
-//        Eleve eleve1 = new Eleve(nom, prenom, email);
-//        eleve1.setMotDePasse(mdp);
-//        Service service = new Service();
-//        service.inscrireEleve(eleve1);
-//
-//        System.out.println(eleve1.toString());
-//        String emailAuth = Saisie.lireChaine("Saisir un E-mail");
-//        String mdpAuth = Saisie.lireChaine("Saisir un mot de passe");
-//        
-//        Eleve testAuth = service.authentifierEleve(emailAuth, mdpAuth);
-//        
-//        if(testAuth == null)
-//        {
-//            System.out.println("Authentification failed");
-//        } else {
-//            System.out.println("Authentification successed");
-//            System.out.println(testAuth.toString());
-//        }
-//        
-//        JpaUtil.fermerFabriquePersistance();
-//    }
-//    
-//    public static void testInscrAuth(){
-//        JpaUtil.creerFabriquePersistance();
-//    
-//        Eleve eleve1 = new Eleve("Hugo", "Victor", "vhugo@paris.fr");
-//        eleve1.setMotDePasse("toto");
-//
-//        Service service = new Service();
-//        service.inscrireEleve(eleve1);
-//        Eleve testAuth = service.authentifierEleve("vhugo@paris.fr", "toto");
-//        if(testAuth == null)
-//        {
-//            System.out.println("Authentification failed");
-//        } else {
-//            System.out.println("Authentification successed");
-//            System.out.println(testAuth.toString());
-//        }
-//
-//        JpaUtil.fermerFabriquePersistance();
-    //}      
-    
-//    public static void testFindById(){
-//        JpaUtil.creerFabriquePersistance();
-//    
-//        Eleve eleve1 = new Eleve("Hugo", "Victor", "vhugo@paris.fr");
-//        eleve1.setMotDePasse("toto");
-//
-//        Service service = new Service();
-//        service.inscrireEleve(eleve1);
-//
-//        Eleve testRecherche = service.rechercherEleveParID(2L);
-//        
-//        if(testRecherche == null)
-//        {
-//            System.out.println("Aucun client correspondant");
-//        } else {
-//            System.out.println(testRecherche.toString());
-//        }
-//
-//        JpaUtil.fermerFabriquePersistance();
-//    }  
-//    
-//    public static void testListClient(){
-//        JpaUtil.creerFabriquePersistance();
-//        
-//        Eleve eleve1 = new Eleve("Hugo", "Victor", "vhugo@paris.fr");
-//        Eleve eleve2 = new Eleve("Charles", "Beaudelaire", "cbo@paris.fr");
-//        Eleve eleve3 = new Eleve("Jacques", "Prévert", "jp@paris.fr");
-//        
-//        
-//        Service service = new Service();
-//        service.inscrireEleve(eleve1);
-//        service.inscrireEleve(eleve2);
-//        service.inscrireEleve(eleve3);
-//        
-//        List<Eleve> testRecherche = service.consulterListeEleves();
-//        
-//        for (Eleve e1 : testRecherche) {
-//            
-//            System.out.println("- " + e1.toString());
-//        }
-//
-//        JpaUtil.fermerFabriquePersistance();
-//    }  
-    public static Intervenant testerAuthByEmailIntervenant1() throws ParseException {
-        Service s = new Service();
-        Intervenant in = s.authentificationIntervenant("sfavro@gmail.com", "mdp1");
-        if (in == null) {
-            System.out.println("Echec de l'authentification authentification, veuillez ré-essayer");
-        } else {
-            System.out.println("L'authentification est un succès : " + in);
-        }
-        return in;
-    }
-    public static Intervenant testerAuthByEmailIntervenant2() throws ParseException {
-        Service s = new Service();
-        Intervenant in = s.authentificationIntervenant("vhernendez@gmail.com", "mdp1");
-        if (in == null) {
-            System.out.println("Echec de l'authentification authentification, veuillez ré-essayer");
-        } else {
-            System.out.println("L'authentification est un succès : " + in);
-        }
-        
-        Cours c = s.CheckDemandeSoutien(in);
-        if (c==null){
-            System.out.println("Pas de cours");
-        }else{
-        System.out.println(c.toString());
-        }
-        return in;
+    private static void afficherMenuPrincipal() {
+        System.out.println("\nMenu Principal:");
+        System.out.println("1. Inscription Élève");
+        System.out.println("2. Authentification Élève");
+        System.out.println("3. Authentification Intervenant");
+        System.out.println("4. Quitter");
     }
 
-    public static void testLancerVisio(){
-        Service s = new Service();
-        Intervenant in = s.authentificationIntervenant("vhernendez@gmail.com", "mdp1");
-        if (in == null) {
-            System.out.println("Echec de l'authentification authentification, veuillez ré-essayer");
+    private static void inscrireEleve(Service service) throws IOException {
+        System.out.println("Inscription d'un nouvel élève");
+        String nom = Saisie.lireChaine("Nom: ");
+        String prenom = Saisie.lireChaine("Prénom: ");
+        String dateNaissance = Saisie.lireChaine("Date de naissance (YYYY-MM-DD): ");
+        String email = Saisie.lireChaine("Email: ");
+        String motDePasse = Saisie.lireChaine("Mot de passe: ");
+        String codeEtablissement = Saisie.lireChaine("Code établissement: ");
+        int niveau = Saisie.lireInteger("Niveau : (0 à 6) ");
+        // Adaptez cette partie pour créer un élève avec les bonnes informations
+        Eleve eleve = new Eleve(nom, prenom, dateNaissance, email, motDePasse, niveau); // Supposons un constructeur adapté
+
+        if (service.inscrireEleve(eleve, codeEtablissement)) {
+            System.out.println("Inscription réussie. Bienvenue " + prenom + " !");
         } else {
-            System.out.println("L'authentification est un succès : " + in);
-        }
-        Cours c = s.lancerVisio(in);
-    }
-    
-    public static void testLancerEtFinVisioEleve(){
-        Service s = new Service();
-        Intervenant in = s.authentificationIntervenant("vhernendez@gmail.com", "mdp1");
-        if (in == null) {
-            System.out.println("Echec de l'authentification authentification, veuillez ré-essayer");
-        } else {
-            System.out.println("L'authentification est un succès : " + in);
-        }
-        Cours c = s.lancerVisio(in);
-        c = s.terminerVisio(c);
-        int note = Saisie.lireInteger("Saisir une note : 1 / 2 / 3");
-        s.noterCours(c, note); 
-    }
-    public static void testLancerEtFinVisioIntervenant(){
-        Service s = new Service();
-        Intervenant in = s.authentificationIntervenant("vhernendez@gmail.com", "mdp1");
-        if (in == null) {
-            System.out.println("Echec de l'authentification authentification, veuillez ré-essayer");
-        } else {
-            System.out.println("L'authentification est un succès : " + in);
-        }
-        Cours c = s.lancerVisio(in);
-        c = s.terminerVisio(c);
-        String bilan = Saisie.lireChaine("Envoyez un bilan à "+ c.getEleve().getPrenom());
-        s.EnvoyerBilanCours(c, bilan); 
-    }
-    
-    public static void testHistoriqueEleve() throws IOException{
-        Eleve e = testAuthEleve2();
-        Service s = new Service();
-        List<Cours> historique = s.getHistoriqueEleve(e);
-        if (historique.isEmpty()){
-            System.out.println("vous n'avez encore jamais fait de soutien");
-        }else{
-        for (Cours c : historique){
-            System.out.println(c.toString());
-            }
+            System.out.println("Échec de l'inscription. Veuillez réessayer.");
         }
     }
-    public static void testHistoriqueIntervenant() throws IOException{
-        Intervenant i = testerAuthByEmailIntervenant2();
-        Service s = new Service();
-        List<Cours> historique = s.getHistoriqueIntervenant(i);
-        if (historique.isEmpty()){
-            System.out.println("vous n'avez encore jamais donné de soutien");
-        }else{
-        for (Cours c : historique){
-            System.out.println(c.toString());
+
+    // Méthode gererMenuEleve avec toutes les options disponibles
+    private static void gererMenuEleve(Service service, Eleve eleve) {
+        boolean retour = false;
+        Cours coursActuel = null; // Utilisé pour stocker le dernier cours demandé ou en cours
+
+        while (!retour) {
+            System.out.println("\nMenu Élève:");
+            System.out.println("1. Demander un soutien");
+            System.out.println("2. Terminer la visio");
+            System.out.println("3. Noter la visio");
+            System.out.println("4. Consulter Historique");
+            System.out.println("5. Retour");
+
+            int choix = Saisie.lireInteger("Votre choix: ");
+            switch (choix) {
+                 case 1:
+                List<Matiere> matieres = service.consulterListeMatieres();
+                System.out.println("Matieres disponibles :");
+                for (int i = 0; i < matieres.size(); i++) {
+                    System.out.println((i + 1) + ". " + matieres.get(i).getNomMatiere());
+                }
+                int choixMatiere = Saisie.lireInteger("Choisissez une matière par son numéro: ");
+                if (choixMatiere < 1 || choixMatiere > matieres.size()) {
+                    System.out.println("Choix invalide. Veuillez réessayer.");
+                } else {
+                    String message = Saisie.lireChaine("Message pour l'intervenant: ");
+                    Matiere matiereChoisie = matieres.get(choixMatiere - 1);
+                    Cours cours = service.demanderCours(eleve, matiereChoisie.getNomMatiere(), message);
+                    if (cours != null) {
+                        System.out.println("Demande de soutien enregistrée pour la matière " + matiereChoisie.getNomMatiere() + ".");
+                    } else {
+                        System.out.println("Erreur lors de la demande de soutien. Aucun intervenant disponible.");
+                    }
+                }
+                break;
+                case 2:
+                    if (coursActuel != null) {
+                        service.terminerVisio(coursActuel);
+                        System.out.println("La visio a été terminée.");
+                    } else {
+                        System.out.println("Aucune visio à terminer.");
+                    }
+                    break;
+                case 3:
+                    if (coursActuel != null && coursActuel.getEtatCours().equals(metier.model.etat.TERMINE)) {
+                        int note = Saisie.lireInteger("Votre note pour la visio (1-3): ");
+                        service.noterCours(coursActuel, note);
+                        System.out.println("Visio notée avec succès.");
+                    } else {
+                        System.out.println("Aucune visio terminée à noter.");
+                    }
+                    break;
+                case 4:
+                    List<Cours> historique = service.getHistoriqueEleve(eleve);
+                    if (historique.isEmpty()) {
+                        System.out.println("Aucun historique disponible.");
+                    } else {
+                        historique.forEach(System.out::println);
+                    }
+                    break;
+                case 5:
+                    retour = true;
+                    break;
+                default:
+                    System.out.println("Choix non valide. Veuillez essayer à nouveau.");
             }
         }
     }
 
-    public static void initialisationTest() throws ParseException, IOException {
-        Service s = new Service();
-;
-        //initialisation des matières
-        s.initialiserMatiere();
+// Méthode gererMenuIntervenant avec toutes les options disponibles
+    private static void gererMenuIntervenant(Service service, Intervenant intervenant) {
+        boolean retour = false;
+        Cours coursActuel = null; // Pour stocker le cours actuel
 
-        //inscription préalable de 3 élèves venant de 2 lycées différents.
+        while (!retour) {
+            System.out.println("\nMenu Intervenant:");
+            System.out.println("1. Consulter demandes de soutien");
+            System.out.println("2. Lancer la visio");
+            System.out.println("3. Terminer la visio");
+            System.out.println("4. Commenter le cours");
+            System.out.println("5. Consulter statistiques");
+            System.out.println("6. Retour");
 
-        Eleve e1 = new Eleve("le vasseur", "florian", "2004/07/05", "flv@gmail.com", "titi", 6);
-        s.inscrireEleve(e1, "0921159K");
-        Eleve e2 = new Eleve("le vasseur", "isa", "2004/07/05", "isa@gmail.com", "titi", 6);
-        s.inscrireEleve(e2, "0332490C");
-        Eleve e3 = new Eleve("Blanc", "Chantal", "2004/07/05", "cblanc@gmail.com", "mdp", 0);
-        s.inscrireEleve(e3, "0332490C");
-        Eleve e4 = new Eleve("Noir", "Chantal", "2004/07/05", "cnoir@gmail.com", "mdp", 2);
-        s.inscrireEleve(e4, "0332490C");
-
-        
-        
-
-        //inscription de quelques intervenants
-        s.initialiserIntervenant();
-        
-      
-        System.out.println("Boujour et Bienvenue sur INSTRUCT'IF.\n");
-        
-        //Presentation des matières
-        List<Matiere> listMatiere = s.consulterListeMatieres();
-        System.out.println("Les matières disponibles sur l'application sont : \n");
-        for (Matiere m : listMatiere) {
-            System.out.println(m);
+            int choix = Saisie.lireInteger("Votre choix: ");
+            switch (choix) {
+                case 1:
+                    Object[] demande = service.checkDemandeSoutien(intervenant);
+                    if (demande[0] != null) {
+                        coursActuel = (Cours) demande[0];
+                        Eleve e = (Eleve) demande[1];
+                        System.out.println("Demande de soutien de " + e.getPrenom() + " pour le cours de " + coursActuel.getMatiere().getNomMatiere());
+                    } else {
+                        System.out.println("Pas de demandes de soutien en attente.");
+                    }
+                    break;
+                case 2:
+                    if (coursActuel != null) {
+                        coursActuel = service.lancerVisio(intervenant);
+                        System.out.println("Visio lancée.");
+                    } else {
+                        System.out.println("Pas de cours à lancer.");
+                    }
+                    break;
+                case 3:
+                    if (coursActuel != null) {
+                        coursActuel = service.terminerVisio(coursActuel);
+                        System.out.println("Visio terminée.");
+                    } else {
+                        System.out.println("Pas de cours à terminer.");
+                    }
+                    break;
+                case 4:
+                    if (coursActuel != null && coursActuel.getEtatCours().equals(metier.model.etat.TERMINE)) {
+                        String bilan = Saisie.lireChaine("Entrez votre commentaire pour le cours: ");
+                        service.EnvoyerBilanCours(coursActuel, bilan);
+                        System.out.println("Bilan envoyé à l'élève.");
+                    } else {
+                        System.out.println("Aucun cours terminé à commenter.");
+                    }
+                    break;
+                case 5:
+                    consulterStatistiques(service);
+                    break;
+                case 6:
+                    retour = true;
+                    break;
+                default:
+                    System.out.println("Choix non valide. Veuillez essayer à nouveau.");
+            }
         }
-
-        //Presentation des élèves et intervenants
-        System.out.println(" Voici les élèves inscrits et les intervenants");
-        List<Eleve> le = s.consulterListeEleves();
-        for (Eleve e : le) {
-            System.out.println(e.toString());
-        }
-        List<Intervenant> li = s.consulterListeIntervenants();
-        for (Intervenant i : li) {
-            System.out.println(i.toString());
-        }
-
-        System.err.println("Tout le monde a été initialisé");
     }
 
-    
-    
-    public static void testStats(){
-        Service s = new Service();
-        List <Object[]> nbEtabParCommune = s.statNbEtablissementParCommune();
-        for (Object[] o : nbEtabParCommune){
-            String commune = (String) o[0];
-            long nbEtab = (long) o[1];
-            System.out.print(commune + " : " + nbEtab + " établissements utilisant Instruct'if\n");
-        }
+// Méthode pour consulter les statistiques dans le menu Intervenant
+    private static void consulterStatistiques(Service service) {
+        List<Etablissement> etablissementsIPSBas = service.statEtablissementIPS();
+        System.out.println("Etablissements avec un IPS bas:");
+        etablissementsIPSBas.forEach(e -> System.out.println(e.getNomEtablissement() + " - " + e.getCommune()));
+
+        Object[] soutiensEtDuree = service.statNbSoutienetDuree();
+        System.out.println("Nombre total de soutiens: " + soutiensEtDuree[0]);
+        System.out.println("Durée moyenne des soutiens: " + soutiensEtDuree[1] + " minutes");
+
+        List<Object[]> nbEtabParCommune = service.statNbEtablissementParCommune();
+        System.out.println("Nombre d'établissements par commune:");
+        nbEtabParCommune.forEach(entry -> System.out.println(entry[0] + ": " + entry[1]));
     }
-    
-    
-    public static void main(String[] args) throws ParseException, IOException {
-            JpaUtil.creerFabriquePersistance();
-            initialisationTest();
-            testerAuthByEmailIntervenant2();
-            //OUBLIEZ PAS DE DEMANDER POUR L'HEURE ET LES MINUTES, ZOUBI
-            Eleve e1 = testAuthEleve1();
-            testDemandeCours(e1);
-            testerAuthByEmailIntervenant2();
-            //testLancerVisio();
-            testLancerEtFinVisioIntervenant();
-            testHistoriqueEleve(); 
-            testHistoriqueIntervenant();
-            testStats();
-            JpaUtil.fermerFabriquePersistance();
-            
-        }
 
 }

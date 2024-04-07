@@ -50,6 +50,16 @@ public class EtablissementDao {
         return resultat;
     }
     
+   public List<Etablissement> selectEtablissementIPSBas() {
+    EntityManager em = JpaUtil.obtenirContextePersistance();
+    String jpql = "select e from Etablissement e where e.IPS <= '85'";
+    Query query = em.createQuery(jpql);
+    List<Etablissement> resultat = (List<Etablissement>) query.getResultList();
+    return resultat;
+}
+
+
+    
     public List<Object[]> countEtablissementByCommune(){
         EntityManager em = JpaUtil.obtenirContextePersistance();
         String jpql = "select e.commune, count(e) as nbParCommune from Etablissement e group by e.commune order by nbParCommune";

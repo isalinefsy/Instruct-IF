@@ -46,6 +46,9 @@ public class Etablissement {
         return commune;
     }
 
+    public String getNomEtablissement() {
+        return nomEtablissement;
+    }
 
 
     public Long getId() {
@@ -54,6 +57,11 @@ public class Etablissement {
 
     public void setId(Long id) {
         this.id = id;
+    }
+    
+      @Override
+    public String toString() {
+        return "Etablissemnt " + "#" + id + ": " + nomEtablissement + " à " + commune + " IPS :" + IPS;
     }
  
     

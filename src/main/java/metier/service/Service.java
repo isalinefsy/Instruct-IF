@@ -356,7 +356,7 @@ public class Service {
             cours = coursdao.findById(c.getId());
             JpaUtil.ouvrirTransaction();
             cours.setEtatCours(metier.model.etat.TERMINE);
-
+            
             cours.setFinVisio(d);
             JpaUtil.validerTransaction();
             System.out.println("----FIN VISIO----");
@@ -456,22 +456,58 @@ public class Service {
     }
 
     
-    public Cours CheckDemandeSoutien(Intervenant i){
+   public Object[] checkDemandeSoutien(Intervenant i) {
         Cours c = null;
+        Eleve e = null;
         IntervenantDao intervenantdao = new IntervenantDao();
+        EleveDao elevedao = new EleveDao();
         try {
             JpaUtil.creerContextePersistance();
-             c = intervenantdao.findById(i.getId()).getCoursActuel();
+            c = intervenantdao.findById(i.getId()).getCoursActuel();
+            e = elevedao.findById(c.getEleve().getId());
         } catch (Exception ex) {
             ex.printStackTrace();
         } finally {
             JpaUtil.fermerContextePersistance();
         }
-        return c;
+        return new Object[] {c, e};
     }
+   
+   public List <Etablissement> statEtablissementIPS() {
+       EtablissementDao etablissementdao = new EtablissementDao();
+       List <Etablissement> etablissementsIPSBas = null;
+       try {
+            JpaUtil.creerContextePersistance();
+            etablissementsIPSBas = etablissementdao.selectEtablissementIPSBas();
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        } finally {
+            JpaUtil.fermerContextePersistance();
+        }
+        return etablissementsIPSBas;
+     
+   }
     
+   public Object[] statNbSoutienetDuree() {
+       Object[] NbetDuree = null;
+       CoursDao coursdao = new CoursDao();
+       try {
+            JpaUtil.creerContextePersistance();
+            NbetDuree = coursdao.NbEtDureeSoutiens();
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        } finally {
+            JpaUtil.fermerContextePersistance();
+        }
+        
+        return NbetDuree;
+     
+   }
     
+   
     public Service() {
     }
+
+    
 
 }

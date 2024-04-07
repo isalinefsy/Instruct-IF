@@ -1,6 +1,6 @@
 package metier.model;
 
-
+import java.util.Calendar;
 import java.util.Date;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -115,11 +115,52 @@ public class Eleve {
   
     }
 
-    @Override
-    public String toString() {
-        return "Eleve " + "#" + id + ": " + nom + " " + prenom + " <" + mail + "> ";
+
+@Override
+public String toString() {
+    // Calcul de l'âge de l'élève
+    Calendar dob = Calendar.getInstance();
+    dob.setTime(dateNaissance);
+    Calendar today = Calendar.getInstance();
+    int age = today.get(Calendar.YEAR) - dob.get(Calendar.YEAR);
+    if (today.get(Calendar.DAY_OF_YEAR) < dob.get(Calendar.DAY_OF_YEAR)) {
+        age--;
     }
-    //le but de la fonction toString est de renvoyer sans jamais afficher
+    
+    // Conversion du niveau en classe
+    String classe;
+    switch (niveau) {
+        case 0:
+            classe = "Terminale";
+            break;
+        case 1:
+            classe = "Première";
+            break;
+        case 2:
+            classe = "Seconde";
+            break;
+        case 3:
+            classe = "Troisième";
+            break;
+        case 4:
+            classe = "Quatrième";
+            break;
+        case 5:
+            classe = "Cinquième";
+            break;
+        case 6:
+            classe = "Sixième";
+            break;
+        default:
+            classe = "Inconnue";
+    }
+    
+    // Récupération du nom de l'établissement
+    String nomEtablissement = (etablissement != null) ? etablissement.getNomEtablissement() : "Inconnu";
+    
+    return "Eleve #" + id + ": " + nom + " " + prenom + " <" + mail + "> " + ", âge : " + age + " ans, en classe de " + classe + ". Etablissement : " + nomEtablissement;
+}
+
     
     
     
