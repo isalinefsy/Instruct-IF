@@ -168,7 +168,7 @@ public class Main {
         if (c == null) {
             System.out.println("vous n'avez pas de soutien demandé actuellement");
         } else {
-            System.out.println("Veuillez prendre en charge le soutien \n" + c.toString() + "\n demandé par :\n " + c.getEleve() + " en " + c.getEleve().getNiveau());
+            System.out.println("Veuillez prendre en charge le soutien \n" + c.toString() + "\n demandé par :\n " + c.getEleve() + " en " + c.getEleve().getNiveau() +"ème.");
         }
         return c;
     }
