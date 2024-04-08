@@ -49,18 +49,18 @@ public Object[] NbEtDureeSoutiens() {
             List<Cours> coursTermines = query.getResultList();
             
             long nbCoursTermines = coursTermines.size();
-            long totalMinutes = 0;
+            double totalMinutes = 0;
             
             for (Cours c : coursTermines) {
                 if (c.getDebutVisio() != null && c.getFinVisio() != null) {
                     // Calcul de la différence en millisecondes puis conversion en minutes
                     long difference = c.getFinVisio().getTime() - c.getDebutVisio().getTime();
-                    long minutes = difference / (60 * 1000);
+                    double minutes = ((double)difference) / (60 * 1000);
                     totalMinutes += minutes;
                 }
             }
             
-            double dureeMoyenne = nbCoursTermines > 0 ? (double) totalMinutes / nbCoursTermines : 0;
+            double dureeMoyenne = nbCoursTermines > 0 ? ((double) totalMinutes) / nbCoursTermines : 0;
 
             Object[] resultat = new Object[2];
             resultat[0] = nbCoursTermines;

@@ -371,7 +371,9 @@ public class Service {
             JpaUtil.creerContextePersistance();
             cours = coursdao.findById(c.getId());
             JpaUtil.ouvrirTransaction();
-            
+            cours.setNote(note);
+            cours.getIntervenant().setEtat(true);
+            cours.getIntervenant().setCoursActuel(null);
             JpaUtil.validerTransaction();
         } catch (Exception ex) {
             ex.printStackTrace();

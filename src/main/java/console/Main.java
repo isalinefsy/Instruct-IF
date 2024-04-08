@@ -37,8 +37,8 @@ public class Main {
         s.inscrireEleve(e1, "0921159K");
         Eleve e2 = new Eleve("le vasseur", "isa", "2004/07/05", "isa@gmail.com", "mdp", 6);
         s.inscrireEleve(e2, "0332490C");
-        Eleve e3 = new Eleve("Noir", "Chantal", "2004/07/05", "cnoir@gmail.com", "mdp", 2);
-        s.inscrireEleve(e3, "0332490C");
+        Eleve e3 = new Eleve("Noir", "Chantal", "2004/07/05", "cnoir@gmail.com", "mdp", 0);
+        s.inscrireEleve(e3, "0690554C");
 
         //inscription de quelques intervenants
         s.initialiserIntervenant();
@@ -63,7 +63,7 @@ public class Main {
             System.out.println(i.toString());
         }
 
-        System.err.println("Tout le monde a été initialisé");
+        System.out.println("Tout le monde a été initialisé");
     }
 
     public static void inscriptionEleve(Service s) throws IOException {
@@ -270,6 +270,7 @@ public class Main {
                             boolean makeVisio = attendreDebutVisio(service, c);
                             if (makeVisio) {
                                 System.out.println("----VISIO----");
+                                service.lancerVisio(c.getIntervenant());
                                 Saisie.lireChaine("Appuyez sur \"Entrée\" pour mettre fin à la visio : ");
                                 mettreFinVisioEleve(service, c);
                             } else {
