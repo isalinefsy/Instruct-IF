@@ -60,11 +60,12 @@ public class EtablissementDao {
     
     public List<Etablissement> selectEtablissementIPSBas() {
     EntityManager em = JpaUtil.obtenirContextePersistance();
-    String jpql = "select e from Etablissement e where e.IPS <= '85'";
+    String jpql = "select e from Etablissement e where substring(e.IPS,1,1)<='8' and substring(e.IPS,1,1)>'1'";
     Query query = em.createQuery(jpql);
     List<Etablissement> resultat = (List<Etablissement>) query.getResultList();
     return resultat;
 }
+    //substring(e.IPS,1,1) >'1'
 
     public List<Etablissement> findAll() {
         String s = "select e from Etablissement e";

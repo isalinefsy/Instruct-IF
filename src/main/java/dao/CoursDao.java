@@ -113,7 +113,7 @@ public Object[] NbEtDureeSoutiens() {
     }
     
     public List<Cours> findAllOfIntervenant(Intervenant i) {
-        String s = "select c from Cours c where c.intervenant = :intervenant";
+        String s = "select c from Cours c where c.intervenant = :intervenant and c.etatCours = metier.model.etat.TERMINE ";
         TypedQuery query = JpaUtil.obtenirContextePersistance().createQuery(s, Cours.class);
         query.setParameter("intervenant", i);
         return query.getResultList();

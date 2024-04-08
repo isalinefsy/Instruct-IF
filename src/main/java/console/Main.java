@@ -80,7 +80,7 @@ public class Main {
 
         s.inscrireEleve(eleve1, codeEt);
 
-        System.out.println(eleve1.getPrenom() + ", vous êtes bien inscrit. Vous pouvez maintenant vous connecter.");
+        //System.out.println(eleve1.getPrenom() + ", vous êtes bien inscrit. Vous pouvez maintenant vous connecter.");
     }
 
     public static Eleve authentificationEleve(Service s) throws IOException {
@@ -156,7 +156,7 @@ public class Main {
                     if (cours != null) {
                         System.out.println("Demande de soutien enregistrée pour la matière " + matiereChoisie.getNomMatiere() + ".");
                     } else {
-                        System.out.println("Erreur lors de la demande de soutien. Aucun intervenant disponible.");
+                        System.out.println("Erreur lors de la demande de soutien. Aucun intervenant disponible. Veuillez réessayer plus tard.");
                     }
                 }
         return cours;
