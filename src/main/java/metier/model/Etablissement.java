@@ -46,6 +46,42 @@ public class Etablissement {
         return commune;
     }
 
+    public void setCommune(String commune) {
+        this.commune = commune;
+    }
+
+    public String getCodeEtablissement() {
+        return codeEtablissement;
+    }
+
+    public void setCodeEtablissement(String codeEtablissement) {
+        this.codeEtablissement = codeEtablissement;
+    }
+
+    public String getNomEtablissement() {
+        return nomEtablissement;
+    }
+
+    public void setNomEtablissement(String nomEtablissement) {
+        this.nomEtablissement = nomEtablissement;
+    }
+
+    public LatLng getCoordonnees() {
+        return coordonnees;
+    }
+
+    public void setCoordonnees(LatLng coordonnees) {
+        this.coordonnees = coordonnees;
+    }
+
+    public String getIPS() {
+        return IPS;
+    }
+
+    public void setIPS(String IPS) {
+        this.IPS = IPS;
+    }
+
 
 
     public Long getId() {

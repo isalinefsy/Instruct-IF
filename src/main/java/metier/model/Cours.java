@@ -77,6 +77,11 @@ public class Cours implements Serializable {
     public void setBilan(String bilan) {
         this.bilan = bilan;
     }
+
+    public void setLaDate(Date laDate) {
+        this.laDate = laDate;
+    }
+    
     
     public Cours() {
     }

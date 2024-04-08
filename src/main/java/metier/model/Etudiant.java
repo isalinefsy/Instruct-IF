@@ -42,6 +42,7 @@ public class Etudiant extends Intervenant {
     public void setSpecialite(String specialite) {
         this.specialite = specialite;
     }
+    
 
   
 

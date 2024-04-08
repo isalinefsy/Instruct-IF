@@ -371,7 +371,7 @@ public class Service {
             JpaUtil.creerContextePersistance();
             cours = coursdao.findById(c.getId());
             JpaUtil.ouvrirTransaction();
-            cours.setNote(note);
+            
             JpaUtil.validerTransaction();
         } catch (Exception ex) {
             ex.printStackTrace();
@@ -479,6 +479,36 @@ public class Service {
         return cours.getEtatCours()!=metier.model.etat.EN_COURS;
     }
     
+    public List <Etablissement> statEtablissementIPS() {
+       EtablissementDao etablissementdao = new EtablissementDao();
+       List <Etablissement> etablissementsIPSBas = null;
+       try {
+            JpaUtil.creerContextePersistance();
+            etablissementsIPSBas = etablissementdao.selectEtablissementIPSBas();
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        } finally {
+            JpaUtil.fermerContextePersistance();
+        }
+        return etablissementsIPSBas;
+     
+   }
+    
+   public Object[] statNbSoutienetDuree() {
+       Object[] NbetDuree = null;
+       CoursDao coursdao = new CoursDao();
+       try {
+            JpaUtil.creerContextePersistance();
+            NbetDuree = coursdao.NbEtDureeSoutiens();
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        } finally {
+            JpaUtil.fermerContextePersistance();
+        }
+        
+        return NbetDuree;
+     
+   }
     
     public Service() {
     }

@@ -58,6 +58,50 @@ public class Intervenant implements Serializable {
         this.etat = true;
     }
 
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public void setNom(String nom) {
+        this.nom = nom;
+    }
+
+    public void setPrenom(String prenom) {
+        this.prenom = prenom;
+    }
+
+    public void setTel(String tel) {
+        this.tel = tel;
+    }
+
+    public void setNiveauMin(int niveauMin) {
+        this.niveauMin = niveauMin;
+    }
+
+    public void setNiveauMax(int niveauMax) {
+        this.niveauMax = niveauMax;
+    }
+
+    public void setMail(String mail) {
+        this.mail = mail;
+    }
+
+    public void setMotDePasse(String motDePasse) {
+        this.motDePasse = motDePasse;
+    }
+
+    public int getNiveauMin() {
+        return niveauMin;
+    }
+
+    public int getNiveauMax() {
+        return niveauMax;
+    }
+
+    public boolean isEtat() {
+        return etat;
+    }
+
     public String getMail() {
         return mail;
     }

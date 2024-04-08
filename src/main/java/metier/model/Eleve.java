@@ -64,6 +64,18 @@ public class Eleve {
         return motDePasse;
     }
 
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public void setNiveau(int niveau) {
+        this.niveau = niveau;
+    }
+
+    public Etablissement getEtablissement() {
+        return etablissement;
+    }
+
 
     public void setNom(String nom) {
         this.nom = nom;

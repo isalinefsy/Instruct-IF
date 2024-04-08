@@ -40,7 +40,38 @@ public class CoursDao {
         }
         return c;
     }
+public Object[] NbEtDureeSoutiens() {
+        EntityManager em = JpaUtil.obtenirContextePersistance();
+        try {
+            // Requête pour obtenir tous les cours terminés
+            String qlString = "SELECT c FROM Cours c WHERE c.etatCours = metier.model.etat.TERMINE";
+            TypedQuery<Cours> query = em.createQuery(qlString, Cours.class);
+            List<Cours> coursTermines = query.getResultList();
+            
+            long nbCoursTermines = coursTermines.size();
+            long totalMinutes = 0;
+            
+            for (Cours c : coursTermines) {
+                if (c.getDebutVisio() != null && c.getFinVisio() != null) {
+                    // Calcul de la différence en millisecondes puis conversion en minutes
+                    long difference = c.getFinVisio().getTime() - c.getDebutVisio().getTime();
+                    long minutes = difference / (60 * 1000);
+                    totalMinutes += minutes;
+                }
+            }
+            
+            double dureeMoyenne = nbCoursTermines > 0 ? (double) totalMinutes / nbCoursTermines : 0;
 
+            Object[] resultat = new Object[2];
+            resultat[0] = nbCoursTermines;
+            resultat[1] = dureeMoyenne;
+
+            return resultat;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null; // Ou gestion d'erreur spécifique
+        }
+    }
 //    public Cours findCurrentByEleve(Eleve e) {
 //        Cours c;
 //        String s = "select e from Cours e where e.eleve = :eleve and e.etatCours = metier.model.etat.EN_COURS";
